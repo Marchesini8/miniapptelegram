@@ -13,14 +13,18 @@ const sendDataButton = document.querySelector("#send-data");
 const people = {
   le: { name: "Leonardo S.", initials: "LS", color: "#d91b7b" },
   vi: { name: "Vitor F.", initials: "VF", color: "#16a34a" },
-  ma: { name: "Mariana P.", initials: "MP", color: "#9333ea" },
+  ma: { name: "Marcelo P.", initials: "MP", color: "#9333ea" },
   gu: { name: "Gustavo R.", initials: "GR", color: "#0ea5e9" },
-  ra: { name: "Rafaela N.", initials: "RN", color: "#f97316" },
+  ra: { name: "Rafael N.", initials: "RN", color: "#f97316" },
   jo: { name: "Joao V.", initials: "JV", color: "#14b8a6" },
-  ca: { name: "Camila D.", initials: "CD", color: "#ef4444" },
+  ca: { name: "Caio D.", initials: "CD", color: "#ef4444" },
   pe: { name: "Pedro L.", initials: "PL", color: "#475569" },
   lu: { name: "Lucas M.", initials: "LM", color: "#65a30d" },
-  an: { name: "Ana B.", initials: "AB", color: "#db2777" },
+  an: { name: "Andre B.", initials: "AB", color: "#db2777" },
+  br: { name: "Bruno C.", initials: "BC", color: "#2563eb" },
+  fe: { name: "Felipe A.", initials: "FA", color: "#7c3aed" },
+  ro: { name: "Rodrigo T.", initials: "RT", color: "#ea580c" },
+  ig: { name: "Igor M.", initials: "IM", color: "#0891b2" },
   me: { name: "Mc Mirella \u{1F525}", initials: "MC", color: "#2aabee" },
 };
 
@@ -98,10 +102,36 @@ const positiveComments = [
   { from: "le", text: "quem entrou cedo se deu bem", time: "12:45" },
 ];
 
+const commentTemplates = [
+  "acabei de ver aqui, ta muito bom",
+  "esse ultimo veio pesado demais",
+  "alguem mais conseguiu baixar?",
+  "grupo ta movimentado de verdade",
+  "cada video novo aumenta as reacoes",
+  "entrei na hora certa",
+  "nao esperava esse nivel aqui",
+  "liberou certinho pra mim",
+  "so aguardando o proximo agora",
+  "isso aqui ta melhorando a cada minuto",
+  "os caras tao reagindo muito rapido",
+  "quem perdeu o comeco perdeu muito",
+  "mais alguem online vendo agora?",
+  "esse grupo nao para nunca",
+  "chegou notificacao e eu vim correndo",
+  "conteudo vindo liso aqui",
+  "esse formato ficou muito bom",
+  "vou deixar aberto pra nao perder nada",
+  "a cada video entra mais gente",
+  "reacao subindo sem parar",
+];
+
+const maleKeys = Object.keys(people).filter((key) => key !== "me");
 const usedCommentIndexes = new Set();
 let online = 2014;
 let playbackTimer = null;
 let currentStep = 0;
+let generatedRounds = 0;
+let generatedCommentIndex = 0;
 
 function nextComment() {
   const available = positiveComments
@@ -115,7 +145,46 @@ function nextComment() {
   return entry.comment;
 }
 
-function buildScript() {
+function currentClock(offset = 0) {
+  const date = new Date();
+  date.setMinutes(date.getMinutes() + offset);
+  return new Intl.DateTimeFormat("pt-BR", {
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(date);
+}
+
+function nextGeneratedComment() {
+  const text = commentTemplates[generatedCommentIndex % commentTemplates.length];
+  const from = maleKeys[(generatedCommentIndex + generatedRounds) % maleKeys.length];
+  const time = currentClock(Math.floor(generatedCommentIndex / 3));
+  generatedCommentIndex += 1;
+  return { type: "comment", wait: 760 + (generatedCommentIndex % 3) * 330, from, text, time };
+}
+
+function nextGeneratedVideo() {
+  const base = videos[generatedRounds % videos.length];
+  const reactionBoost = generatedRounds * 8;
+  generatedRounds += 1;
+
+  return {
+    type: "video",
+    ...base,
+    id: `generated-${generatedRounds}`,
+    wait: 1600,
+    duration: base.duration,
+    size: `${(8 + ((generatedRounds * 5) % 24)).toFixed(1)} MB`,
+    time: currentClock(Math.floor(generatedRounds / 2)),
+    caption: generatedRounds % 2 ? "mais um liberado para membros VIP" : "acabou de sair aqui no grupo",
+    reactions: base.reactions.map((reaction) => ({
+      ...reaction,
+      count: reaction.count + reactionBoost,
+      gain: reaction.gain + 4 + (generatedRounds % 5),
+    })),
+  };
+}
+
+function buildInitialScript() {
   const items = [
     { type: "system", wait: 450, text: "21.483 membros, 2.014 online" },
     { type: "comment", wait: 600, from: "gu", text: "cheguei agora, ja liberou algo?", time: "12:39" },
@@ -139,11 +208,23 @@ function buildScript() {
     });
   });
 
-  items.push({ type: "system", wait: 1200, text: "Sem novas mensagens por enquanto" });
   return items;
 }
 
-const script = buildScript();
+function appendGeneratedFlow() {
+  script.push({
+    type: "system",
+    wait: 900,
+    text: `${people[maleKeys[generatedRounds % maleKeys.length]].name} esta digitando...`,
+    transient: true,
+  });
+  script.push(nextGeneratedVideo());
+  script.push(nextGeneratedComment());
+  script.push(nextGeneratedComment());
+  script.push(nextGeneratedComment());
+}
+
+const script = buildInitialScript();
 
 function scrollToBottom() {
   chat.scrollTop = chat.scrollHeight;
@@ -327,8 +408,11 @@ function playItem(item) {
 }
 
 function playNext() {
+  if (!script[currentStep]) {
+    appendGeneratedFlow();
+  }
+
   const item = script[currentStep];
-  if (!item) return;
 
   playbackTimer = window.setTimeout(() => playItem(item), item.wait);
 }
