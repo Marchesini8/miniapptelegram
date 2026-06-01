@@ -121,6 +121,7 @@ button {
   display: grid;
   place-items: center;
   background: linear-gradient(135deg, #ff7b43, #ffcc4d);
+  font-size: 22px;
   font-weight: 800;
 }
 
