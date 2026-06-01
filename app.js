@@ -25,7 +25,7 @@ const people = {
   fe: { name: "Felipe A.", initials: "FA", color: "#7c3aed" },
   ro: { name: "Rodrigo T.", initials: "RT", color: "#ea580c" },
   ig: { name: "Igor M.", initials: "IM", color: "#0891b2" },
-  me: { name: "MC Ryan \u{1F525}", initials: "MC", color: "#2aabee" },
+  me: { name: "MC Mirella \u{1F525}", initials: "MC", color: "#2aabee" },
 };
 
 const videos = [
@@ -420,7 +420,7 @@ function playNext() {
 sendDataButton.addEventListener("click", () => {
   const payload = {
     action: "grupo_interativo_aberto",
-    group: "Grupo VIP do MC Ryan",
+    group: "Grupo VIP da MC Mirella",
     currentStep,
   };
 
