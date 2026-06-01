@@ -1,0 +1,19 @@
+{
+  "name": "miniapptelegram",
+  "version": "1.0.0",
+  "description": "Telegram Mini App de grupo interativo pronto para Railway.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "keywords": [
+    "telegram",
+    "mini-app",
+    "railway"
+  ],
+  "license": "MIT"
+}

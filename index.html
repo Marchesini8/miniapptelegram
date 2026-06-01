@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#2aabee" />
+    <title>Grupo VIP de Mc Mirella</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="phone-stage">
+      <div class="phone-window">
+        <div class="browser-bar">
+          <span>entrar</span>
+          <button aria-label="Minimizar">_</button>
+          <button aria-label="Fechar">x</button>
+        </div>
+
+        <header class="group-header">
+          <button class="back-button" aria-label="Voltar">&lsaquo;</button>
+          <div class="group-photo">M</div>
+          <div class="group-title">
+            <strong id="group-name">Grupo VIP de Mc Mirella &#128293;</strong>
+            <span id="group-status">114 membros, 23.6k online</span>
+          </div>
+          <button class="header-icon" aria-label="Pesquisar">o</button>
+          <button class="header-icon" aria-label="Menu">...</button>
+        </header>
+
+        <main class="chat" id="chat" aria-live="polite">
+          <div class="day-pill">Hoje</div>
+        </main>
+
+        <footer class="locked-composer">
+          <div class="join-hint" id="join-hint">
+            <span>Mensagem fixada: toque nos arquivos e acompanhe a conversa</span>
+          </div>
+          <div class="composer-row">
+            <span>Voce nao tem permissao para postar nesse grupo.</span>
+            <button id="send-data" type="button" aria-label="Continuar">&gt;</button>
+          </div>
+        </footer>
+      </div>
+    </div>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
